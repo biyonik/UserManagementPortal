@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
-@SuperBuilder
 @Entity
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
