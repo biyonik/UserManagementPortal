@@ -37,6 +37,7 @@ public class User extends BaseEntity implements UserDetails, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, updatable = false)
     private Long id;
 
     @Column(unique = true, updatable = false)
