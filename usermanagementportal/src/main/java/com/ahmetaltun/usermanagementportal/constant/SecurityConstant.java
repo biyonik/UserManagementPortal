@@ -1,5 +1,14 @@
 package com.ahmetaltun.usermanagementportal.constant;
 
+
+/**
+ * @author Ahmet Altun
+ * @version 1.0
+ * @email ahmet.altun60@gmail.com
+ * @since 03/12/2024
+ */
+
+
 public class SecurityConstant {
     public static final Long EXPIRATION_TIME = 432_000_000L; // 5 days expressed in milliseconds
     public static final String TOKEN_PREFIX = "Bearer ";
