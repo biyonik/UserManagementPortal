@@ -7,10 +7,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Ahmet Altun
@@ -32,6 +35,38 @@ public class GlobalExceptionHandler {
                         ex.getMessage(),
                         ex.getClass().getSimpleName(),
                         Map.of()
+                ));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        Map<String, List<String>> validationErrors = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .collect(Collectors.groupingBy(
+                        FieldError::getField,
+                        Collectors.mapping(
+                                FieldError::getDefaultMessage,
+                                Collectors.toList()
+                        )
+                ));
+
+        Map<String, Object> errorDetails = Map.of(
+                "validationErrors", validationErrors,
+                "errorCount", validationErrors.values()
+                        .stream()
+                        .mapToInt(List::size)
+                        .sum()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(
+                        request.getRequestURI(),
+                        HttpStatus.BAD_REQUEST,
+                        "Validation failed",
+                        ex.getClass().getSimpleName(),
+                        errorDetails
                 ));
     }
 }
